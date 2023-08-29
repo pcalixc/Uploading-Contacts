@@ -9,11 +9,10 @@ This application allows you upload contacts from an .csv file.
     npm install
     npm run dev
 ```
-##You can download a list of test data on the following Endpoint:
+## You can download a list of test data on the following Endpoint:
 
 GET
-https://8j5baasof2.execute-api.us-west-2.amazonaws.com/production/tests/trucode/s
-amples?size=10
+https://8j5baasof2.execute-api.us-west-2.amazonaws.com/production/tests/trucode/samples?size=10
 
 
 
