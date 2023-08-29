@@ -1,9 +1,9 @@
-
 window.addEventListener('DOMContentLoaded', start);
 
 function start() {
-  console.log("yaaaaaaaaaaa")
-
+    cargarUsuarios();
+    allContactsView();
+   
 }
 
 let contactsArray;
@@ -18,10 +18,12 @@ const hidden = document.getElementById("hidden-input");
 let counter = 0;
 let successCounter= true;
 
-allContacts.addEventListener('click', () => {
-    cargarUsuarios();
-    });
 
+
+document.getElementById("allContacts").onclick = () =>{
+    renderContacts();
+    document.getElementById("allContactsView").classList.remove('hidden');
+    }
 
 const cargarUsuarios= async () => {
     try {
@@ -32,10 +34,10 @@ const cargarUsuarios= async () => {
           throw new Error(`Error al cargar usuarios. Código de estado: ${respuesta.status}`);
       }
       allContacts = await respuesta.json();
-      console.log("info",allContacts);
   } catch (error) {
       console.error("Ocurrió un error:", error);
   }
+
     }
 
 const formatPhone= (number) => {
@@ -52,6 +54,7 @@ const enviarContactos = async (contactArray)=> {
       contactArray[n] = contactArray[n].replace(/\n$/, "");
   }
     for (let i = 0; i < contactArray.length; i += 3) {
+        document.getElementById('submitContacts').innerHTML='Uploading...';
         const name = contactArray[i];
         const phone = contactArray[i + 1];
         const email = contactArray[i + 2];
@@ -74,9 +77,11 @@ const enviarContactos = async (contactArray)=> {
         }
         console.log("Sending", info); 
     }
+    document.getElementById('submitContacts').innerHTML='Upload';
 
     if(successCounter== true){
       successMessage();
+      remove();
     }
     else{errorMessage()}
 
@@ -118,8 +123,9 @@ hidden.onchange = (e) => {
 
 const successMessage = ()=>{
   var div = document.createElement("div");
-div.innerHTML =  			`<div class="flex h-screen w-screen flex-col items-center justify-center space-y-6 bg-gray-100 bg-opacity-50 shadow-md px-4 sm:flex-row sm:space-x-6 sm:space-y-0">
-<div class="w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-md duration-300 hover:scale-105 hover:shadow-xl">
+div.innerHTML =  			
+`<div class="flex h-screen w-screen flex-col items-center justify-center space-y-6 bg-gray-100 bg-opacity-50 shadow-md px-4 sm:flex-row sm:space-x-6 sm:space-y-0">
+<div class=" bg-white w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-md duration-300 hover:scale-105 hover:shadow-xl">
   <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto mt-8 h-16 w-16 text-green-400" viewBox="0 0 20 20" fill="currentColor">
   <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
   </svg>
@@ -151,12 +157,10 @@ div.innerHTML =  			`<div class="flex h-screen w-screen flex-col items-center ju
 	  <p class="my-4 text-center text-sm text-gray-500">Oh, something went wrong</p>
 	</div>
 </div>`
-
 div.style.position = "absolute";
 div.style.top = "50%";
 div.style.left = "50%";
 div.style.transform = "translate(-50%, -50%)";
-
 setTimeout(function() {
   div.remove();
 }, 2000);
@@ -164,9 +168,7 @@ setTimeout(function() {
 document.body.appendChild(div);
 }
 
-
 submitContacts.addEventListener('click', () => {
-  console.log(contactsArray)
   
   enviarContactos(contactsArray)
  
@@ -186,7 +188,6 @@ function dropHandler(ev) {
   counter = 0;
 }
 
-
 function dragEnterHandler(e) {
 e.preventDefault();
 if (!hasFiles(e)) {
@@ -204,7 +205,7 @@ if (hasFiles(e)) {
   e.preventDefault();
 }}
 
-document.getElementById("cancel").onclick = () => {
+const remove = () => {
 while (gallery.children.length > 0) {
   gallery.lastChild.remove();
 }
@@ -213,3 +214,62 @@ empty.classList.remove("hidden");
 gallery.append(empty);
 };
 
+
+const allContactsView= ()=>{
+var div = document.createElement("div");
+div.id = "allContactsView"
+div.className= "hidden"
+  div.innerHTML =  			
+  `<div class=" h-screen w-screen flex flex-col items-center justify-center space-y-6 bg-gray-100 bg-opacity-50 shadow-md">
+  <div class="container w-full md:w-4/5 xl:w-3/5  px-2">
+      <!--Card-->
+      <div id='recipients' class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
+          <table id="example" class="stripe hover " style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
+              <thead>
+                  <tr>
+                  <th class="text-left">Nº</th>
+                       <th class="text-left">Name</th>
+                       <th class="text-left">Phone</th>
+                       <th class="text-left">Email</th>
+                  </tr>
+              </thead>
+              <tbody id=contactRow>
+                 
+              </tbody>
+          </table>
+          <button id="closeContactsView" onclick='closeContactsView()' class="inline-block px-2 py-2 text-base border-2 border-red-500 text-red-500 font-medium ml-auto
+						leading-tight rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out mt-3">
+							Close
+						</button>
+      </div>
+  </div>
+  </div>`
+div.style.position = "absolute";
+div.style.top = "50%";
+div.style.left = "50%";
+div.style.transform = "translate(-50%, -50%)";
+document.body.appendChild(div);
+
+}
+
+
+const renderContacts=() =>{
+    document.getElementById('contactRow').innerHTML = ``
+    let count=1;
+    allContacts.items.forEach(e => {
+    document.getElementById('contactRow').innerHTML += ` 
+    <tr>
+    <td>${count}</td>
+    <td>${e.name}</td>
+    <td>${e.phone}</td>
+    <td>${e.email}</td>         
+    </tr>`   
+
+    count++ 
+    }); 
+    
+}
+
+const closeContactsView=()=>{
+    document.getElementById("allContactsView").classList.add('hidden');
+     }
