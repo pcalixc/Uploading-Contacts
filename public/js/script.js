@@ -6,19 +6,21 @@ function start() {
 }
 
 let contactsArray= [];
-let allContacts;
-const fileTempl = document.getElementById("file-template"),
-empty = document.getElementById("empty");
+let storedContacts;
+let counter = 0;
+let successCounter= true;
+let hasFiles1= false
+let uploaded=0;
 let selectedFile = {};
+
+empty = document.getElementById("empty");
 const gallery = document.getElementById("gallery"),
 overlay = document.getElementById("overlay");
 const hidden = document.getElementById("hidden-input");
-let counter = 0;
-let successCounter= true;
-var hf= false
 
 
-document.getElementById("allContacts").onclick = () =>{
+
+document.getElementById("storedContacts").onclick = () =>{
     renderContacts();
     document.getElementById("allContactsView").classList.remove('hidden');
     }
@@ -31,8 +33,8 @@ const loadContacts= async () => {
       if (!response.ok) {
           throw new Error(`Error loading contacts. Status code: ${response.status}`);
       }
-      allContacts = await response.json();
-      console.log(allContacts)
+      storedContacts = await response.json();
+      console.log(storedContacts)
   } catch (error) {
       console.error("An error occurred:", error);
   }
@@ -83,12 +85,14 @@ const uploadContacts = async (contactArray)=> {
           successCounter= false
         }
         console.log("Sending", info); 
+        uploaded ++;
+        console.log(uploaded)
     }
     document.getElementById('submitContacts').innerHTML='Upload';
     loadContacts();
 
     if(successCounter== true){
-      successMessage();
+      successMessage(uploaded, (contactArray.length/3));
       remove();
       document.getElementById("contactNotif").classList.remove('hidden');
     }
@@ -107,7 +111,7 @@ const remove = () => {
   selectedFile = {};
   empty.classList.remove("hidden");
   gallery.append(empty);
-  hf=false;
+  hasFiles1=false;
   contactsArray=[];
   };
 
@@ -158,11 +162,11 @@ const fileSize = (size) => {
 document.getElementById("browseButton").onclick = () => hidden.click();
 
 hidden.onchange = (e) => {
-  if (hf){
+  if (hasFiles1){
     errorMessage("One at at time");
   }
   else{
-    hf=true;
+    hasFiles1=true;
     selectedFile = e.target.files[0];
     if (selectedFile) {
       addFile(gallery, selectedFile);
@@ -170,7 +174,7 @@ hidden.onchange = (e) => {
   }
 };
 
-const successMessage = ()=>{
+const successMessage = (m,n)=>{
   var div = document.createElement("div");
   div.innerHTML =  			
     `<div class="flex h-screen w-screen flex-col items-center justify-center space-y-6 bg-gray-100 bg-opacity-50 shadow-md px-4 sm:flex-row sm:space-x-6 sm:space-y-0">
@@ -179,7 +183,7 @@ const successMessage = ()=>{
         <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
         </svg>
         <h1 class="mt-2 text-center text-2xl font-bold text-gray-500">Success</h1>
-        <p class="my-4 text-center text-sm text-gray-500">Woah, all contacts were uploaded!</p>
+        <p class="my-4 text-center text-sm text-gray-500">Woah, you've uploaded ${m} of ${n} contacts!</p>
       </div>
     </div>`
 
@@ -223,18 +227,18 @@ submitContacts.addEventListener('click', () => {
 });
 
 // use to check if a file is being dragged
-const hasFiles = 
+const hasFiles2 = 
 ({ dataTransfer: { types = [] } }) =>
 types.indexOf("Files") > -1;
 
 
 function dropHandler(ev) {
   ev.preventDefault();
-  if (hf){
+  if (hasFiles1){
     errorMessage("One at at time");
   }
   else{
-    hf=true;
+    hasFiles1=true;
     const file = ev.dataTransfer.files[0]; // Obtener el primer archivo del arreglo
     if (file) {
       addFile(gallery, file);
@@ -246,7 +250,7 @@ function dropHandler(ev) {
 
 function dragEnterHandler(e) {
 e.preventDefault();
-if (!hasFiles(e)) {
+if (!hasFiles2(e)) {
   return;
 }
 ++counter && overlay.classList.add("draggedover");
@@ -257,7 +261,7 @@ function dragLeaveHandler(e) {
 }
 
 function dragOverHandler(e) {
-if (hasFiles(e)) {
+if (hasFiles2(e)) {
   e.preventDefault();
 }}
 
@@ -266,14 +270,14 @@ var div = document.createElement("div");
 div.id = "allContactsView"
 div.className= "hidden h-5/6 w-5/6"
   div.innerHTML =  			
-  `<div class="container flex justify-center mx-auto">
+  `<div id="container" class="container flex justify-center mx-auto">
   <div class="flex flex-col ">
           <div class="pt-0 px-3 pb-3 mt-8 border-b bg-white border-gray-200 rounded-lg shadow h-min-[70%] h-[70%] w-max-[60%] overflow-y-auto">
-              <table class=" divide-y divide-gray-200" id="dataTable">
+              <table  class=" divide-y divide-gray-200" id="dataTable">
                   <thead class="bg-white sticky top-0">
                       <tr>
                           <th class="px-6 py-2 text-xs text-gray-500">
-                              N
+                          Nº
                           </th>
                           <th class="px-6 py-2 text-xs text-gray-500">
                               Name
@@ -290,12 +294,11 @@ div.className= "hidden h-5/6 w-5/6"
 
                   </tbody>
               </table>
-              <button id="closeContactsView" onclick='closeContactsView()' class="inline-block px-2 py-2 text-base border-2 border-red-500 text-red-500 font-medium ml-auto
+              <button id="closeContactsView" onclick='closeContactsView()' class=" inline-block px-2 py-2 text-base border-2 border-red-500 text-red-500 font-medium ml-auto
 						leading-tight rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out mt-3">
 							Close
 						</button>
           </div>
-      
   </div>
 </div>`
 div.style.position = "absolute";
@@ -307,13 +310,14 @@ document.body.appendChild(div);
 }
 
 const renderContacts=() =>{
-    if (allContacts.items.length == 0){
-      document.getElementById('contactsTable').innerHTML = `No contacts added`
+    if (storedContacts.items.length == 0){
+      document.getElementById('container').classList.add('h-[180px]')
+      document.getElementById('contactRow').innerHTML = `No contacts added`
     }
     else{ 
     document.getElementById('contactRow').innerHTML = ``
     let count=1;
-    allContacts.items.forEach(e => {
+    storedContacts.items.forEach(e => {
     document.getElementById('contactRow').innerHTML += ` 
     <tr class="whitespace-nowrap">
       <td class="px-6 py-2 text-sm text-center text-gray-500">
