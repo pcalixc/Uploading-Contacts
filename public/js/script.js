@@ -25,9 +25,8 @@ document.getElementById("storedContacts").onclick = () =>{
     document.getElementById("allContactsView").classList.remove('hidden');
     }
 
-/**
- * Renders the contacts in the table based on the storedContacts data.
- */
+
+//Renders the contacts in the table based on the storedContacts data.
 const renderContacts=() =>{
   if (storedContacts.items.length === 0){
     document.getElementById('container').classList.add('h-[180px]')
@@ -261,7 +260,6 @@ const fileSize = (size) => {
     return (size + "b");
   }
 };
-
 
 document.getElementById("browseButton").onclick = () => hidden.click();
 
