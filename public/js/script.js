@@ -3,10 +3,9 @@ window.addEventListener('DOMContentLoaded', start);
 function start() {
     loadContacts();
     allContactsView();
-    renderContacts();
 }
 
-let contactsArray;
+let contactsArray= [];
 let allContacts;
 const fileTempl = document.getElementById("file-template"),
 empty = document.getElementById("empty");
@@ -16,7 +15,7 @@ overlay = document.getElementById("overlay");
 const hidden = document.getElementById("hidden-input");
 let counter = 0;
 let successCounter= true;
-
+var hf= false
 
 
 document.getElementById("allContacts").onclick = () =>{
@@ -33,6 +32,7 @@ const loadContacts= async () => {
           throw new Error(`Error loading contacts. Status code: ${response.status}`);
       }
       allContacts = await response.json();
+      console.log(allContacts)
   } catch (error) {
       console.error("An error occurred:", error);
   }
@@ -44,15 +44,24 @@ const formatPhone= (number) => {
       return number ;
 }
 
-const sendContacts = async (contactArray)=> {
-  try {
+// Uploading contacts to the API
+const uploadContacts = async (contactArray)=> {
+  if(contactArray.length==0){
+    errorMessage("You have to upload a document first")
+  }
+  else{   
+    try {
     const apiUrl = "https://8j5baasof2.execute-api.us-west-2.amazonaws.com/production/tests/trucode/items";
     let n= contactArray.length - 1;
     if (contactArray[n].endsWith("\n")) {
       contactArray[n] = contactArray[n].replace(/\n$/, "");
   }
+
+    document.getElementById('submitContacts').innerHTML=
+        `Uploading... 
+        <img class=" motion-safe:animate-spin h-4 w-4 opacity-50 " src="./img/loading-spinner-svgrepo-com.svg"></img> `
     for (let i = 0; i < contactArray.length; i += 3) {
-        document.getElementById('submitContacts').innerHTML='Uploading...';
+        
         const name = contactArray[i];
         const phone = contactArray[i + 1];
         const email = contactArray[i + 2];
@@ -76,19 +85,20 @@ const sendContacts = async (contactArray)=> {
         console.log("Sending", info); 
     }
     document.getElementById('submitContacts').innerHTML='Upload';
-    renderContacts();
+    loadContacts();
 
     if(successCounter== true){
       successMessage();
       remove();
       document.getElementById("contactNotif").classList.remove('hidden');
-      renderContacts();
     }
     else{errorMessage('Oh, something went wrong')}
 
-} catch (error) {
+      } 
+    catch (error) {
     console.error("Error:", error);
-}};
+}}
+};
 
 const remove = () => {
   while (gallery.children.length > 0) {
@@ -97,33 +107,36 @@ const remove = () => {
   selectedFile = {};
   empty.classList.remove("hidden");
   gallery.append(empty);
+  hf=false;
+  contactsArray=[];
   };
 
 
 function addFile(target, file) {
-  console.log("from add file",file.type)
-   if (file.type=='text/csv') {
+   if (file.type=='text/csv') {    
       const reader = new FileReader(); 
       reader.onload = function(event) {
         const fileContents = event.target.result;
+        if(fileContents.trim()===''){
+          errorMessage('Your .csv file is empty');
+          remove();
+          }
         contactsArray = fileContents.split(/,|\n(?!$)/)
       };
       reader.readAsText(file);
-    
-    objectURL = URL.createObjectURL(file);
-    const clone = fileTempl.content.cloneNode(true);
-    clone.querySelector("h1").textContent = file.name;
-    clone.querySelector("li").id = objectURL;
-    clone.querySelector(".size").textContent =
-      file.size > 1024
-      ? file.size > 1048576
-        ? Math.round(file.size / 1048576) + "mb"
-        : Math.round(file.size / 1024) + "kb"
-      : file.size + "b";
-
-    empty.classList.add("hidden");
-    target.prepend(clone);
-    selectedFile[objectURL] = file;
+      document.getElementById("gallery").innerHTML=
+      `
+        <li class=" block p-1 w-full h-12">
+          <article tabindex="0" class="group w-full h-full rounded-lg focus:outline-none focus:shadow-outline elative cursor-pointer relative ">
+            <section class="flex flex-col rounded-md text-xs break-words w-full h-full z-20 absolute top-0 py-2 px-3">
+              <h1 id="fileName" class="flex-1 group-hover:text-slate-500 mr-4 rounded-md border-0 text-sm font-light text-gray-500 h-2 pb-4">${file.name}</h1>
+              <div class="flex">
+                <p id="fileSize" class=" size text-xs text-blue-500">${fileSize(file.size)}</p>
+              </div>
+            </section>
+          </article>
+        </li>
+  `
   }
   else{
     remove();
@@ -131,11 +144,30 @@ function addFile(target, file) {
   }
 }
 
-document.getElementById("button").onclick = () => hidden.click();
+const fileSize = (size) => {
+  if (size > 1048576) {
+    return (Math.round(size / 1048576) + "mb");
+  } else if (size > 1024) {
+    return (Math.round(size / 1024) + "kb");
+  } else {
+    return (size + "b");
+  }
+};
+
+
+document.getElementById("browseButton").onclick = () => hidden.click();
+
 hidden.onchange = (e) => {
-  selectedFile = e.target.files[0];
-  console.log(selectedFile)
-  addFile(gallery, selectedFile);
+  if (hf){
+    errorMessage("One at at time");
+  }
+  else{
+    hf=true;
+    selectedFile = e.target.files[0];
+    if (selectedFile) {
+      addFile(gallery, selectedFile);
+    }
+  }
 };
 
 const successMessage = ()=>{
@@ -187,18 +219,26 @@ const errorMessage = (message)=>{
 }
 
 submitContacts.addEventListener('click', () => {
-  sendContacts(contactsArray)
+  uploadContacts(contactsArray)
 });
 
 // use to check if a file is being dragged
-const hasFiles = ({ dataTransfer: { types = [] } }) =>
+const hasFiles = 
+({ dataTransfer: { types = [] } }) =>
 types.indexOf("Files") > -1;
+
 
 function dropHandler(ev) {
   ev.preventDefault();
-  const file = ev.dataTransfer.files[0]; // Obtener el primer archivo del arreglo
-  if (file) {
-    addFile(gallery, file);
+  if (hf){
+    errorMessage("One at at time");
+  }
+  else{
+    hf=true;
+    const file = ev.dataTransfer.files[0]; // Obtener el primer archivo del arreglo
+    if (file) {
+      addFile(gallery, file);
+    }
   }
   overlay.classList.remove("draggedover");
   counter = 0;
@@ -221,37 +261,43 @@ if (hasFiles(e)) {
   e.preventDefault();
 }}
 
-
-
 const allContactsView= ()=>{
 var div = document.createElement("div");
 div.id = "allContactsView"
-div.className= "hidden "
+div.className= "hidden h-5/6 w-5/6"
   div.innerHTML =  			
-  `<div class="  h-screen w-screen flex flex-col items-center justify-center space-y-6 bg-gray-100 bg-opacity-50 shadow-md">
-  <div class="container w-full md:w-4/5 xl:w-3/5  px-2 transition-all duration-500">
-      <!--Card-->
-      <div class="p-8 mt-6 lg:mt-0 rounded shadow bg-white">
-          <table id='contactsTable' class="stripe hover " style="width:100%; padding-top: 1em;  padding-bottom: 1em;">
-              <thead>
-                  <tr>
-                  <th class="text-left">Nº</th>
-                      <th class="text-left">Name</th>
-                      <th class="text-left">Phone</th>
-                      <th class="text-left">Email</th>
-                  </tr>
-              </thead>
-              <tbody id=contactRow>
-                 
-              </tbody>
-          </table>
-          <button id="closeContactsView" onclick='closeContactsView()' class="inline-block px-2 py-2 text-base border-2 border-red-500 text-red-500 font-medium ml-auto
+  `<div class="container flex justify-center mx-auto">
+  <div class="flex flex-col ">
+          <div class="pt-0 px-3 pb-3 mt-8 border-b bg-white border-gray-200 rounded-lg shadow h-min-[70%] h-[70%] w-max-[60%] overflow-y-auto">
+              <table class=" divide-y divide-gray-200" id="dataTable">
+                  <thead class="bg-white sticky top-0">
+                      <tr>
+                          <th class="px-6 py-2 text-xs text-gray-500">
+                              N
+                          </th>
+                          <th class="px-6 py-2 text-xs text-gray-500">
+                              Name
+                          </th>
+                          <th class="px-6 py-2 text-xs text-gray-500">
+                              Phone
+                          </th>
+                          <th class="px-6 py-2 text-xs text-gray-500">
+                              Email
+                          </th>
+                      </tr>
+                  </thead>
+                  <tbody id=contactRow class="bg-white divide-y divide-gray-500">
+
+                  </tbody>
+              </table>
+              <button id="closeContactsView" onclick='closeContactsView()' class="inline-block px-2 py-2 text-base border-2 border-red-500 text-red-500 font-medium ml-auto
 						leading-tight rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out mt-3">
 							Close
 						</button>
-      </div>
+          </div>
+      
   </div>
-  </div>`
+</div>`
 div.style.position = "absolute";
 div.style.top = "50%";
 div.style.left = "50%";
@@ -269,11 +315,24 @@ const renderContacts=() =>{
     let count=1;
     allContacts.items.forEach(e => {
     document.getElementById('contactRow').innerHTML += ` 
-    <tr>
-    <td>${count}</td>
-    <td>${e.name}</td>
-    <td>${e.phone}</td>
-    <td>${e.email}</td>         
+    <tr class="whitespace-nowrap">
+      <td class="px-6 py-2 text-sm text-center text-gray-500">
+      ${count}
+      </td>
+      <td class="px-6 py-2 text-center">
+          <div class="text-xs text-gray-900">
+          ${e.name}
+          </div>
+      </td>
+      <td class="px-6 py-2 text-center">
+          <div class="text-xs text-gray-500">
+          ${e.phone}
+              </div>
+      </td>
+      <td class="px-6 py-2 text-center">
+        <a href="#"
+        class="px-4 py-1 text-xs text-green-600 bg-green-200 rounded-full"> ${e.email}</a>
+      </td>
     </tr>`   
     count++ 
     }); 
