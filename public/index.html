@@ -15,8 +15,6 @@
 				<div class="bg-none group inline-block">
 					<button class="outline-none  focus:outline-none my-3  px-3 py-1 rounded-md flex items-center min-w-32">
 						<span class="transform hover:-rotate-180transition duration-150 ease-in-out">
-							<!-- <svg class=" fill-current text-slate-500 h-6 w-6 transform group-hover:-rotate-180transition duration-150 ease-in-out" -->
-							<!-- </svg> -->
 							<img class="text-blue-400 h-6 w-6  transition-transform hover:rotate-180 transition duration-150 ease-in-out" 
 							src="./img/6.svg" alt="">
 						</span>
@@ -39,7 +37,6 @@
 					</a>
 				</div>
 			</div>
-
 			<div class=" flex justify-center  items-center mb-16 rounded-md h-screen ">
 				<div class=" min-h-[600px] w-7/8 rounded-md sm:px-8 md:px-16 sm:py-8 mb-4">
 					<main class="flex justify-center container mx-auto h-4/5">
@@ -48,7 +45,7 @@
 						<div id="overlay" class="w-full h-full absolute top-0 left-0 pointer-events-none z-50 flex flex-col items-center justify-center rounded-md">
 							<i>
 								<svg class="fill-current w-12 h-12 mb-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-								<path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
+									<path d="M19.479 10.092c-.212-3.951-3.473-7.092-7.479-7.092-4.005 0-7.267 3.141-7.479 7.092-2.57.463-4.521 2.706-4.521 5.408 0 3.037 2.463 5.5 5.5 5.5h13c3.037 0 5.5-2.463 5.5-5.5 0-2.702-1.951-4.945-4.521-5.408zm-7.479-1.092l4 4h-3v4h-2v-4h-3l4-4z" />
 								</svg>
 							</i>
 						<p class="text-lg text-blue-700">Drop your file</p>
@@ -63,35 +60,32 @@
 								</span>
 								<input id="hidden-input" type="file" multiple class="hidden bg-blue-800" />
 								<button id="browseButton" class=" inline-flex border border-[#e0e0e0] py-2 px-2 text-base font-medium hover:bg-slate-700 hover:-translate-y-1 hover:scale-110 duration-300 bg-slate-500 text-slate-100
-								mt-2 rounded-md px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none">
+									mt-2 rounded-md px-3 py-1 bg-gray-200 hover:bg-gray-300 focus:shadow-outline focus:outline-none">
 									Browse
 								</button>
 							</div>
 
 							<ul id="gallery" class="flex flex-1 flex-wrap min-h-[70px] -m-1 m-5 ">
 								<li id="empty" class="  h-full w-full text-center flex flex-col items-center justify-center items-center">
-								<img class="mx-auto w-[70px]" src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png" alt="no data" />
-								<span class="text-xs text-gray-500">No files selected</span>
+									<img class="mx-auto w-[70px]" src="https://user-images.githubusercontent.com/507615/54591670-ac0a0180-4a65-11e9-846c-e55ffce0fe7b.png" alt="no data" />
+									<span class="text-xs text-gray-500">No files selected</span>
 								</li>
 							</ul>
 						</section>
 						<!--footer -->
 						<footer class="flex justify-end px-8 pb-8 pt-0">
-						<button id="submitContacts" class=" flex items-center justify-center  hover:-translate-y-1 hover:scale-105 duration-300 inline-block w-full px-2 py-2  border-2 border-blue-500 text-blue-500 font-medium mt-2
-						leading-tight rounded-md ease-in-out hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out mx-2">
-						Upload
-						</button>
-						<button id="cancel" onclick="remove()" class=" inline-block  text-base text-red-500 font-medium mt-2
-						leading-tight rounded-md ">
-							<img class="w-5 h-5  hover:scale-110 transition-transform  mx-2" src="./img/trash-can.svg" alt="trash-bin" >
-						</button>
+							<button id="submitContacts" class=" flex items-center justify-center  hover:-translate-y-1 hover:scale-105 duration-300 inline-block w-full px-2 py-2  border-2 border-blue-500 text-blue-500 font-medium mt-2
+								leading-tight rounded-md ease-in-out hover:bg-blue-500 hover:text-white focus:outline-none focus:ring-0 transition duration-150 ease-in-out mx-2">
+								Upload
+							</button>
+							<button id="cancel" onclick="remove()" class=" inline-block  text-base text-red-500 font-medium mt-2
+								leading-tight rounded-md ">
+								<img class="w-5 h-5  hover:scale-110 transition-transform  mx-2" src="./img/trash-can.svg" alt="trash-bin" >
+							</button>
 						</footer>
 					</article>
 					</main>
 				</div>
-
-				<!-- 	 -->
-				
 			</div>
 		</div>
 	</body>
@@ -101,42 +95,39 @@
 <style>
 
 	.object{
-	  width: 300px;
-	  height: 300px;
-	  opacity: 0;
-	  background: white;
-	  border-radius: 5%;
-	  border-color: #d3d3d3;
-	  border-width: thin;
-	  transform: scaleY(0.8) skewX(10deg);
-	  transform-origin: 50% 0%;
-	  transition-duration: 0.25s;
+		width: 300px;
+		height: 300px;
+		opacity: 0;
+		background: white;
+		border-radius: 5%;
+		border-color: #d3d3d3;
+		border-width: thin;
+		transform: scaleY(0.8) skewX(10deg);
+		transform-origin: 50% 0%;
+		transition-duration: 0.25s;
 	}
 	.button:hover + .object {
-	  opacity: 1;
-	  transform: scaleY(1) skewX(0deg);
+		opacity: 1;
+		transform: scaleY(1) skewX(0deg);
 	}  
 	
 	table.dataTable.hover tbody tr:hover,
 		table.dataTable.display tbody tr:hover {
-			background-color: #ebf4ff;}
+		background-color: #ebf4ff;}
 	
-	#overlay p,
-	i {
-	opacity: 0;
+	#overlay p,i {
+		opacity: 0;
 	}
 	
 	#overlay.draggedover {
-	background-color: rgba(255, 255, 255, 0.7);
-	}
-	#overlay.draggedover p,
-	#overlay.draggedover i {
-	opacity: 1;
+		background-color: rgba(255, 255, 255, 0.7);
+		}
+		#overlay.draggedover p,
+		#overlay.draggedover i {
+		opacity: 1;
 	}
 	
 	.group:hover .group-hover\:text-blue-800 {
-	color: #2b6cb0;
+		color: #2b6cb0;
 	}
-
-	
 	</style>
